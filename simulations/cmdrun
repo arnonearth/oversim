@@ -1,0 +1,1 @@
+opp_runall -j2 ../out/gcc-release/src/OverSim -u Cmdenv -c CDN-P2P -f omnetpp.ini -r 0..1

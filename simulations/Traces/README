@@ -1,0 +1,6 @@
+trace file instruction:
+
+1. Download MPEG4 video trace files from Arizona university website (Video Trace Files for Performance Evaluation http://trace.eas.asu.edu/)
+2. delete first and second lines ( change it to be like Verbose_StarWarsIV).
+3. change traceFile parameter in .ini file (**.mpeg4camera.traceFile = ).
+
