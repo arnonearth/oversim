@@ -669,12 +669,14 @@ void CDNP2PTracker::peerUnregister(TrackerMessage* trackerMsg)
 							  if(CDNIt->first==serverID)
 							  {
 							  CDNIt->second.cdnfilmStreamed[nodeIt->second.filmnumber]--;
+							  loadServers[serverID] -= 1;
 							  }
 							}
+						 
 						}
 
 					peerList[sfn].erase(nodeIt);
-					loadServers[serverID] -= 1;
+					
 					break;
 				}
 			}
@@ -1578,15 +1580,17 @@ void CDNP2PTracker::SetServerNumber(TransportAddress& node,int filmnumber,int ca
 	// Fix Unregister scenario!!!
 	if(selectPolicy == 2)
 	{	
-		int index;
+		int index = 0;
 		// Initiate an iterator to check if the peer has already been assigned
 		std::map <TransportAddress,int>::iterator serverIt = peerServers[filmnumber].begin();
 		// Check if the peer is already assigned to any server
 		serverIt = peerServers[filmnumber].find(node);
-		// The incoming peer hasn't been assigned yet, assign it a sever
+		
+		
+
 		if(serverIt == peerServers[filmnumber].end() || cascadeNum == -1)
 		{
-			
+
 			// find a server with the lowest load
 			index = filmnumber%serverNum+1; // for load balancing in multiple videos scenario
 			int min = loadServers[index];
@@ -1598,15 +1602,13 @@ void CDNP2PTracker::SetServerNumber(TransportAddress& node,int filmnumber,int ca
 					index = i;
 				}
 			}
+			loadServers[index] += 1;
+			peerServers[filmnumber].insert(std::make_pair<TransportAddress,int>(node,index));
 		}
 		else// where a peer seek forward and change its cascade-AGH
 		{
 			index =((cascadeNum+filmnumber)%serverNum)+1;
 		}
-		// Assign a peer to the selected server by Total load balancing method
-		peerServers[filmnumber].insert(std::make_pair<TransportAddress,int>(node,index));
-		// Increase the load of the selected server by 1
-		loadServers[index] += 1;
 		
 	}
 	
@@ -1856,13 +1858,3 @@ cModule *CDNP2PTracker::findNodeInTopo(const IPvXAddress& addr)
 	}
 
 }
-
-// void iniLoad();
-// {
-// 	for (unsigned int i=1 ; i<6 ; i++)
-// 	{
-// 		loadServers[i] = 0;
-// 	}
-// }
-
-
